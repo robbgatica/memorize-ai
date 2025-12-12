@@ -1,0 +1,2 @@
+# Requirements for Ollama MCP client example
+httpx>=0.25.0
