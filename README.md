@@ -1,6 +1,6 @@
 # Memory Forensics MCP Server
 
-AI-powered memory analysis using Volatility 3 and the Model Context Protocol (MCP).
+AI-powered memory analysis using Volatility 3 and the MCP.
 
 ## Features
 
@@ -28,25 +28,25 @@ Memory Dump → Volatility 3 → SQLite Cache → MCP Server → LLM Client
 
 ## LLM Compatibility
 
-**This MCP server works with any LLM!** The server is LLM-agnostic and communicates via the Model Context Protocol (MCP).
+**This MCP server works with any LLM** The server is LLM-agnostic and communicates via the Model Context Protocol (MCP).
 
 ### Supported LLMs
 
 | LLM | Client | Best For |
 |-----|--------|----------|
-| **Claude** (Opus/Sonnet) | Claude Code (official) | Production, highest quality analysis |
-| **Llama** (via Ollama) | Custom client (included) | Air-gapped, confidential investigations |
+| **Claude** (Opus/Sonnet) | Claude Code | Higher quality analysis |
+| **Llama** (via Ollama) | Custom client (included) | Local LLM setup/confidential investigations |
 | **GPT-4** | Custom client | OpenAI ecosystem users |
-| **Mistral, Phi, others** | Custom client | Specialized use cases |
+| **Mistral, Phi, others** | Custom client | Custom configs |
 
 ### Quick Setup by LLM
 
-**Claude (Easiest - Recommended):**
+**Claude (Easiest):**
 - Official Claude Code client with native tool calling support
 - Uses `~/.claude/mcp.json` configuration
 - See Quick Start section below for setup instructions
 
-**Llama / Ollama (Air-Gapped):**
+**Llama / Ollama:**
 ```bash
 # Install Ollama
 curl -fsSL https://ollama.com/install.sh | sh
@@ -249,7 +249,7 @@ AI: "Complete analysis exported to Win11Dump_report.html"
 
 ## Using with Local LLMs
 
-The MCP server works with any LLM via the Model Context Protocol. For local/air-gapped analysis:
+The MCP server works with any LLM via the Model Context Protocol. For local analysis:
 
 ### Quick Start with Ollama
 
@@ -276,7 +276,6 @@ python ollama_client.py
 - **Full guide**: See [MULTI_LLM_GUIDE.md](MULTI_LLM_GUIDE.md) for comprehensive setup instructions for Llama, GPT-4, and other LLMs
 
 **Benefits of local LLMs:**
-- Fully air-gapped forensic analysis
 - No data sent to cloud services
 - Free to use (no API costs)
 - Suitable for confidential investigations
