@@ -1,6 +1,6 @@
 # Memory Forensics MCP Server
 
-AI-powered memory analysis using Volatility 3 and the MCP.
+AI-powered memory analysis using Volatility 3 and MCP.
 
 ## Features
 
