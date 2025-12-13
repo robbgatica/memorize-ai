@@ -5,9 +5,9 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 import json
 
-# Add Volatility 3 to path
-from config import VOLATILITY_PATH
-sys.path.insert(0, str(VOLATILITY_PATH))
+# Import volatility3 (either from pip or custom path configured in config.py)
+# config.py handles adding custom path to sys.path if needed
+import config  # This ensures volatility path is configured
 
 try:
     from volatility3.framework import contexts, automagic, plugins, exceptions
@@ -16,7 +16,8 @@ try:
     import volatility3.plugins
 except ImportError as e:
     print(f"Error importing Volatility 3: {e}")
-    print(f"Make sure Volatility 3 is installed at: {VOLATILITY_PATH}")
+    print("Install with: pip install -r requirements.txt")
+    print("Or set VOLATILITY_PATH environment variable to point to your custom volatility3 installation")
     sys.exit(1)
 
 logging.basicConfig(level=logging.WARNING)

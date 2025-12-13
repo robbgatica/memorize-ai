@@ -22,8 +22,8 @@ AI-powered memory analysis using Volatility 3 and MCP.
 ## Architecture
 
 ```
-Memory Dump → Volatility 3 → SQLite Cache → MCP Server → LLM Client
-                                                          (Claude Code/Local LLM)
+Memory Dump -> Volatility 3 -> SQLite Cache -> MCP Server -> LLM Client
+                                                              (Claude Code/Local LLM)
 ```
 
 ## LLM Compatibility
@@ -35,7 +35,7 @@ Memory Dump → Volatility 3 → SQLite Cache → MCP Server → LLM Client
 | LLM | Client | Best For |
 |-----|--------|----------|
 | **Claude** (Opus/Sonnet) | Claude Code | Higher quality analysis |
-| **Llama** (via Ollama) | Custom client (included) | Local LLM setup/confidential investigations |
+| **Llama** (via Ollama) | Custom client (included) | Local/offline LLM setup, confidential investigations |
 | **GPT-4** | Custom client | OpenAI ecosystem users |
 | **Mistral, Phi, others** | Custom client | Custom configs |
 
@@ -111,15 +111,25 @@ See [MULTI_LLM_GUIDE.md](MULTI_LLM_GUIDE.md) for comprehensive multi-LLM setup i
    ```bash
    pip install -r requirements.txt
    ```
+   This installs all required dependencies including Volatility 3 from PyPI.
 
-4. **Configure paths** (edit `config.py`):
+4. **Configure memory dumps directory** (edit `config.py`):
    ```python
-   # Set your Volatility 3 installation path
-   VOLATILITY_PATH = Path("/path/to/volatility3")
-
    # Set your memory dumps directory
    DUMPS_DIR = Path("/path/to/your/memdumps")
    ```
+
+**Advanced: Using Custom Volatility 3 Installation**
+
+If you need to use a custom Volatility 3 build (e.g., bleeding edge from git):
+
+```bash
+# Set environment variable
+export VOLATILITY_PATH=/path/to/custom/volatility3
+
+# Or edit config.py directly
+# The system will automatically detect and use your custom installation
+```
 
 ### Configure for Claude Code
 
@@ -205,18 +215,18 @@ python ollama_client.py
 User: "Analyze the Win11Dump memory dump for signs of compromise"
 
 AI: "Let me process that dump first..."
-→ Calls process_dump("Win11Dump")
-→ Processes 103 processes, 101 network connections
+  > Calls process_dump("Win11Dump")
+  > Processes 103 processes, 101 network connections
 
 AI: "Let me check for anomalies..."
-→ Calls detect_anomalies("Win11Dump")
+  > Calls detect_anomalies("Win11Dump")
 
 AI: "Found critical anomalies:
      - cmd.exe spawned by winword.exe (possible macro exploit)
      - Process 'svch0st.exe' similar to 'svchost.exe' (typosquatting)
 
      Let me check the timeline..."
-→ Calls generate_timeline("Win11Dump")
+  > Calls generate_timeline("Win11Dump")
 
 AI: "Timeline shows suspicious sequence:
      1. winword.exe opens document
@@ -224,7 +234,7 @@ AI: "Timeline shows suspicious sequence:
      3. powershell.exe downloads from external IP
 
      Let me analyze that PowerShell process..."
-→ Calls analyze_process("Win11Dump", 2048)
+  > Calls analyze_process("Win11Dump", 2048)
 
 AI: "This PowerShell process has:
      - Unbacked executable memory (code injection detected)
@@ -234,7 +244,7 @@ AI: "This PowerShell process has:
      This indicates a fileless malware infection via macro exploit.
 
      Exporting full report..."
-→ Calls export_data("Win11Dump", format="html")
+  > Calls export_data("Win11Dump", format="html")
 
 AI: "Complete analysis exported to Win11Dump_report.html"
 ```
@@ -276,9 +286,9 @@ python ollama_client.py
 - **Full guide**: See [MULTI_LLM_GUIDE.md](MULTI_LLM_GUIDE.md) for comprehensive setup instructions for Llama, GPT-4, and other LLMs
 
 **Benefits of local LLMs:**
-- No data sent to cloud services
-- Free to use (no API costs)
-- Suitable for confidential investigations
+- Complete privacy - no data sent to cloud services
+- Free to use after initial setup (no API costs)
+- Suitable for confidential investigations and offline environments
 
 ## Performance Notes
 
@@ -289,8 +299,9 @@ python ollama_client.py
 ## Troubleshooting
 
 **"Volatility import error"**
-- Check Volatility 3 path in `config.py`
-- Ensure Volatility dependencies installed
+- Ensure volatility3 is installed: `pip install -r requirements.txt`
+- For custom installations, check VOLATILITY_PATH environment variable or config.py
+- Verify import works: `python -c "import volatility3; print('OK')"`
 
 **"No dumps found"**
 - Check `DUMPS_DIR` in `config.py`

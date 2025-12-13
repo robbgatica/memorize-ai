@@ -1,8 +1,9 @@
 # MCP SDK
 mcp>=1.0.0
 
-# Volatility 3 will be imported from your existing installation
-# We'll add the path dynamically
+# Volatility 3 - Primary dependency
+# Installed from PyPI by default. Advanced users can override with custom path via VOLATILITY_PATH env variable.
+volatility3>=2.5.0
 
 # Volatility 3 dependencies (required for specific plugins)
 pefile>=2023.2.7  # Required for windows.netscan and other PE analysis plugins

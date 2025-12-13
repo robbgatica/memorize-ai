@@ -9,7 +9,7 @@ The Memory Forensics MCP Server is **LLM-agnostic** - it communicates via the Mo
 **What this means:**
 - Same server code works with all LLMs
 - Switch between LLMs by changing the client
-- Use Claude for production, Llama for air-gapped/confidential work
+- Use Claude for production, Llama for offline/confidential work
 - Optimize tool descriptions per LLM capability
 
 ## Supported LLM Profiles
@@ -78,9 +78,9 @@ No additional configuration needed.
 
 ---
 
-## Option 2: Llama (via Ollama) - Local/Air-Gapped
+## Option 2: Llama (via Ollama) - Local/Offline
 
-**Best for:** Confidential investigations, air-gapped environments, cost savings
+**Best for:** Confidential investigations, offline/local environments, cost savings
 
 ### Prerequisites
 
@@ -310,10 +310,10 @@ export MCP_VERBOSITY=concise
 | **Cost** | Paid API | Free (local) |
 | **Quality** | Highest | Very good (70B) to moderate (8B) |
 | **Speed** | Fast (cloud) | Varies (local hardware) |
-| **Privacy** | Cloud-based | Fully local/air-gapped |
+| **Privacy** | Cloud-based | Fully local/offline |
 | **Context Window** | 200K tokens | 128K tokens (Llama 3.1) |
 | **Tool Calling** | Native support | Manual parsing needed |
-| **Best For** | Production, highest quality | Confidential, air-gapped |
+| **Best For** | Production, highest quality | Confidential, offline environments |
 
 ---
 
@@ -410,11 +410,11 @@ ollama serve
 
 ## Security Considerations
 
-### Air-Gapped Environments
+### Offline/Isolated Environments
 
 For maximum security:
 1. **Use Ollama** (fully local, no network calls)
-2. **Disable network** on analysis machine
+2. **Disable network** on analysis machine if required
 3. **Transfer dumps** via USB/physical media
 4. **Export results** to JSON/CSV for offline review
 
@@ -466,7 +466,7 @@ ollama run llama3.1:13b --memory 16g
 |----------|------------------|
 | Production forensics | Claude Code (best quality) |
 | Confidential investigations | Ollama + Llama 3.1 70B |
-| Air-gapped analysis | Ollama + Llama 3.1 70B |
+| Offline/local analysis | Ollama + Llama 3.1 70B |
 | Resource-constrained | Ollama + Llama 3.2 |
 | Cost-sensitive | Ollama + any Llama model |
 

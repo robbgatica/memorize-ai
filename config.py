@@ -1,5 +1,6 @@
 """Configuration for Memory Forensics MCP Server"""
 import os
+import sys
 from pathlib import Path
 
 # Project paths
@@ -7,8 +8,26 @@ PROJECT_ROOT = Path(__file__).parent
 DATA_DIR = PROJECT_ROOT / "data"
 DB_PATH = DATA_DIR / "artifacts.db"
 
-# Volatility 3 path
-VOLATILITY_PATH = Path(os.path.expanduser("~/tools/volatility3"))
+# Volatility 3 configuration
+# Try to import volatility3 from PyPI first (recommended for most users)
+try:
+    import volatility3
+    VOLATILITY_INSTALLED_VIA_PIP = True
+    VOLATILITY_PATH = None  # Not needed when installed via pip
+except ImportError:
+    VOLATILITY_INSTALLED_VIA_PIP = False
+    # Fallback to custom path for advanced users
+    VOLATILITY_PATH = Path(os.path.expanduser(
+        os.getenv("VOLATILITY_PATH", "~/tools/volatility3")
+    ))
+
+    # Add to path if using custom installation
+    if VOLATILITY_PATH.exists():
+        sys.path.insert(0, str(VOLATILITY_PATH))
+    else:
+        print(f"WARNING: Volatility 3 not found via pip or at {VOLATILITY_PATH}")
+        print("Install with: pip install -r requirements.txt")
+        print("Or set VOLATILITY_PATH environment variable to point to your custom volatility3 installation")
 
 # Memory dumps location
 DUMPS_DIR = Path(os.path.expanduser("~/tools/memdumps"))
@@ -28,10 +47,6 @@ EXTRACTION_DIR.mkdir(exist_ok=True)
 # Cleanup settings
 EXTRACTION_RETENTION_HOURS = 24  # Keep extractions for 24 hours
 AUTO_CLEANUP_ON_STARTUP = True  # Clean old extractions at startup
-
-# Volatility 3 configuration
-VOLATILITY_PLUGINS_PATH = VOLATILITY_PATH / "volatility3" / "framework" / "plugins"
-VOLATILITY_SYMBOLS_PATH = VOLATILITY_PATH / "volatility3" / "symbols"
 
 # Hash algorithms to calculate
 HASH_ALGORITHMS = ['md5', 'sha1', 'sha256']
