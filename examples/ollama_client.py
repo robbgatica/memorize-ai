@@ -172,12 +172,19 @@ class OllamaMCPClient:
         if not self.conversation_history:
             system_prompt = f"""You are a memory forensics expert assistant. {self._format_tools_for_ollama()}
 
-When a user asks you to analyze memory dumps, use the available tools to gather information, then provide a detailed analysis.
+CRITICAL RULES:
+1. NEVER make up, guess, or fabricate data. Only report actual results from tools.
+2. When you need data, call a tool by responding with ONLY the JSON (you can optionally add brief explanation before the JSON).
+3. After calling a tool, you will receive real results. Analyze ONLY those results.
+4. If you don't have data yet, call the appropriate tool first.
+5. Do NOT predict what tool results will be - wait for actual results.
 
-IMPORTANT:
-1. First, use tools to gather data
-2. Then, provide your analysis based on the tool results
-3. Respond with JSON when calling tools, plain text for analysis"""
+Example of correct tool calling:
+```
+{{"tool": "list_dumps"}}
+```
+
+After you call a tool, I will provide the actual results for you to analyze."""
 
             self.conversation_history.append({
                 "role": "system",
@@ -210,14 +217,26 @@ IMPORTANT:
             result = response.json()
             assistant_message = result.get("message", {}).get("content", "")
 
-            # Check if response is a tool call
-            if assistant_message.strip().startswith("{"):
+            # Extract JSON from response (handle markdown code blocks)
+            json_content = None
+
+            # Try to extract JSON from markdown code blocks
+            import re
+            json_match = re.search(r'```(?:json)?\s*(\{[^`]+\})\s*```', assistant_message, re.DOTALL)
+            if json_match:
+                json_content = json_match.group(1).strip()
+            # Or check if response starts with JSON directly
+            elif assistant_message.strip().startswith("{"):
+                json_content = assistant_message.strip()
+
+            # Check if we found a tool call
+            if json_content:
                 try:
-                    tool_call = json.loads(assistant_message.strip())
-                    if "tool" in tool_call and "arguments" in tool_call:
+                    tool_call = json.loads(json_content)
+                    if "tool" in tool_call:
                         # Execute tool
                         tool_name = tool_call["tool"]
-                        tool_args = tool_call["arguments"]
+                        tool_args = tool_call.get("arguments", {})
 
                         print(f"\n[Calling tool: {tool_name}]")
                         tool_result = await self.call_tool(tool_name, tool_args)
@@ -225,18 +244,19 @@ IMPORTANT:
                         # Add tool result to history
                         self.conversation_history.append({
                             "role": "assistant",
-                            "content": assistant_message
+                            "content": f"Tool call: {json_content}"
                         })
                         self.conversation_history.append({
                             "role": "user",
-                            "content": f"Tool result:\n{tool_result}\n\nNow provide your analysis."
+                            "content": f"Tool result:\n{tool_result}\n\nNow provide your analysis based on this actual data."
                         })
 
                         # Get analysis
                         return await self.chat("")
 
-                except json.JSONDecodeError:
-                    pass  # Not a tool call, treat as regular response
+                except json.JSONDecodeError as e:
+                    print(f"[DEBUG] Failed to parse JSON: {e}")
+                    pass  # Not a valid tool call, treat as regular response
 
             # Add assistant response to history
             self.conversation_history.append({
