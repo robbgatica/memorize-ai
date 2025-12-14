@@ -197,7 +197,10 @@ IMPORTANT:
                 json={
                     "model": self.ollama_model,
                     "messages": self.conversation_history,
-                    "stream": False
+                    "stream": False,
+                    "options": {
+                        "num_ctx": 32768  # Increase context window for tool descriptions
+                    }
                 }
             )
 
